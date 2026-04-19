@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digital Clock</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; font-family: Arial, sans-serif; }
+        #clock { font-size: 48px; margin: 20px; }
+        #controls { margin: 20px; }
+    </style>
+</head>
+<body>
+    <div id="clock">00:00:00</div>
+    <div id="controls">
+        <select id="timezone"></select>
+        <label for="format">12/24 Format:</label>
+        <select id="format">
+            <option value="12">12 Hour</option>
+            <option value="24">24 Hour</option>
+        </select>
+        <button id="fullscreen">Fullscreen</button>
+    </div>
+    <script>
+        const clockElement = document.getElementById('clock');
+        const timezoneSelect = document.getElementById('timezone');
+        const formatSelect = document.getElementById('format');
+        const fullscreenButton = document.getElementById('fullscreen');
+
+        const timezones = ["UTC", "America/New_York", "Europe/London", "Asia/Kolkata", "Australia/Sydney"]; // Add more timezones as needed
+
+        timezones.forEach(tz => {
+            const option = document.createElement('option');
+            option.value = tz;
+            option.textContent = tz;
+            timezoneSelect.appendChild(option);
+        });
+
+        function updateClock() {
+            const selectedTimezone = timezoneSelect.value;
+            const date = new Date().toLocaleString('en-US', { timeZone: selectedTimezone });
+            let [datePart, timePart] = date.split(', ');
+            let [hours, minutes, seconds] = timePart.split(':');
+
+            if (formatSelect.value === '12') {
+                hours = hours % 12 || 12; // Convert to 12-hour format
+                const ampm = hours < 12 ? 'AM' : 'PM';
+                clockElement.textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+            } else {
+                clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+            }
+        }
+
+        timezoneSelect.addEventListener('change', updateClock);
+        formatSelect.addEventListener('change', updateClock);
+
+        fullscreenButton.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
